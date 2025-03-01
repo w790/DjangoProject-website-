@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from .models import Room
 
 # Форма для регистрации
 class RegisterForm(UserCreationForm):
@@ -10,3 +11,7 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+class RoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['number', 'description', 'price_night', 'image']
