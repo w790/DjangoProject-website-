@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Список номеров</h2>
+<a href="{% url 'room_add' %}">Добавить номер</a>
+<ul>
+    {% for room in rooms %}
+        <li>{{ room.number }} - {{ room.price_night }} руб/ночь
+            <a href="{% url 'room_edit' room.pk %}">Редактировать</a>
+            <a href="{% url 'room_delete' room.pk %}">Удалить</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

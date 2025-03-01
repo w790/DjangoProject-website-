@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login,logout,authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
 
 # Форма — это основа ввода данных.
@@ -15,6 +16,7 @@ def register_view(request):#Регистрация нового пользова
     else:
         form = RegisterForm()
     return render(request,"booking/register.html",{'form':form})
+
 def login_view(request):#Авторизация (вход) существующего пользователя
     if request.method == 'POST':
         username = request.POST['username']
@@ -22,6 +24,14 @@ def login_view(request):#Авторизация (вход) существующ�
         user = authenticate(request, username=username, password=password)
         if user is not None:
             return redirect('home')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'booking/login.html', {'form': form})
+
 def logout_view(request):#Выхода пользователя из системы
     logout(request)
     return redirect('home')
+# Представление для главной страницы
+
+def home_view(request):
+    return render(request, 'booking/home.html')
