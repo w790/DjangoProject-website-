@@ -17,3 +17,10 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.user.username} забронировал комнату {self.room} с {self.check_in} по {self.check_out}"
 
+    def is_available(self):
+        """Проверяет, доступен ли номер для выбранных дат."""
+        existing_bookings = Booking.objects.filter(room=self.room)
+        for booking in existing_bookings:
+            if (self.check_in < booking.check_out and self.check_out > booking.check_in):
+                return False
+        return True
