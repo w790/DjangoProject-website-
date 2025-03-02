@@ -2,8 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import RegisterForm
-from .forms import RoomForm
+from .forms import RegisterForm,BookingForm,RoomForm
 from .models import Room
 
 # Форма — это основа ввода данных.
@@ -84,3 +83,21 @@ def room_delete(request, pk):
     room = get_object_or_404(Room, pk=pk)
     room.delete()
     return redirect('room_list')
+
+
+@login_required
+def create_booking(request):
+    if request.method == "POST":
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user  # Устанавливаем текущего пользователя
+            booking.save()
+            return redirect('booking_success')  # Переход к успешному бронированию
+    else:
+        form = BookingForm()
+
+    return render(request, 'create_booking.html', {'form': form})
+
+def booking_success(request):
+    return render(request, 'booking_success.html')
