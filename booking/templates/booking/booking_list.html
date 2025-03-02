@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Список бронирований</h2>
+
+<table border="1">
+    <tr>
+        <th>Пользователь</th>
+        <th>Номер</th>
+        <th>Заезд</th>
+        <th>Выезд</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {% for booking in bookings %}
+    <tr>
+        <td>{{ booking.user.username }}</td>
+        <td>{{ booking.room.name }}</td>
+        <td>{{ booking.check_in }}</td>
+        <td>{{ booking.check_out }}</td>
+        <td>{{ booking.status }}</td>
+        <td>
+            <a href="{% url 'confirm_booking' booking.id %}">✅ Подтвердить</a>
+            <a href="{% url 'cancel_booking' booking.id %}">❌ Отменить</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">Нет бронирований</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
