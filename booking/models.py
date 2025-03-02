@@ -9,11 +9,17 @@ class Room(models.Model):
     def __str__(self):
         return f"Комната {self.number} - {self.price_night} руб/ночь"
 class Booking(models.Model):
+    STATUS_CHOICES = [
+        ("Ожидание", "Ожидание"),
+        ("Подтверждено", "Подтверждено"),
+        ("Отменено", "Отменено"),
+    ]
     user = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="Пользователь")
     room = models.ForeignKey(Room, on_delete=models.CASCADE,verbose_name="Комната")
     check_in = models.DateField(verbose_name="Дата заселения")
     check_out = models.DateField(verbose_name="Дата выселения")
     created_at  = models.DateTimeField(auto_now_add=True,verbose_name="Дата бронирования со временем")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Ожидание")  # Новое поле
     def __str__(self):
         return f"{self.user.username} забронировал комнату {self.room} с {self.check_in} по {self.check_out}"
 

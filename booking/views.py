@@ -108,3 +108,29 @@ def booking_success(request):
 def user_dashboard(request):
     bookings = Booking.objects.filter(user=request.user)  # Получаем бронирования текущего пользователя
     return render(request, "booking/dashboard.html", {"bookings": bookings})
+
+# Проверяем, является ли пользователь администратором
+def is_admin(user):
+    return user.is_staff  # Только для админов
+
+@login_required
+@user_passes_test(is_admin)
+def booking_list(request):
+    bookings = Booking.objects.all()  # Получаем все бронирования
+    return render(request, "booking/booking_list.html", {"bookings": bookings})
+
+@login_required
+@user_passes_test(is_admin)
+def confirm_booking(request, pk):
+    booking = get_object_or_404(Booking, pk=pk)
+    booking.status = "Подтверждено"  # Меняем статус
+    booking.save()
+    return redirect("booking/booking_list")
+
+@login_required
+@user_passes_test(is_admin)
+def cancel_booking(request, pk):
+    booking = get_object_or_404(Booking, pk=pk)
+    booking.status = "Отменено"  # Меняем статус
+    booking.save()
+    return redirect("booking/booking_list")
