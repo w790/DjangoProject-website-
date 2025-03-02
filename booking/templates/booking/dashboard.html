@@ -2,16 +2,34 @@
 
 {% block content %}
 <h2>Личный кабинет</h2>
-<p>Добро пожаловать, {{ user.username }}!</p>
 
-<h3>Ваши бронирования:</h3>
-{% if bookings %}
-    <ul>
-        {% for booking in bookings %}
-            <li>Номер: {{ booking.room.name }}, Даты: {{ booking.check_in }} - {{ booking.check_out }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>У вас пока нет бронирований.</p>
-{% endif %}
+<h3>Ваши бронирования</h3>
+<table border="1">
+    <tr>
+        <th>Номер</th>
+        <th>Дата заезда</th>
+        <th>Дата выезда</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {% for booking in bookings %}
+    <tr>
+        <td>{{ booking.room.name }}</td>
+        <td>{{ booking.check_in }}</td>
+        <td>{{ booking.check_out }}</td>
+        <td>{{ booking.status }}</td>
+        <td>
+            {% if booking.status == "Ожидание" %}
+                <a href="{% url 'user_cancel_booking' booking.id %}">❌ Отменить</a>
+            {% else %}
+                -
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">У вас пока нет бронирований</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

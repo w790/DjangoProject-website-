@@ -1,5 +1,29 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
-<h1>Добро пожаловать в наш отель!</h1>
-<p>Здесь вы можете забронировать номер и управлять своими бронированиями.</p>
+<div class="container">
+    <h1 class="text-center mt-4">Добро пожаловать в наш отель!</h1>
+
+    <h2 class="mt-4">Список доступных номеров</h2>
+
+    {% if rooms %}
+        <div class="row">
+            {% for room in rooms %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ room.name }}</h5>
+                            <p class="card-text">{{ room.description }}</p>
+                            <p class="card-text"><strong>Цена: {{ room.price }} руб./ночь</strong></p>
+                            <a href="{% url 'create_booking' %}" class="btn btn-primary">Забронировать</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Нет доступных номеров</p>
+    {% endif %}
+</div>
 {% endblock %}

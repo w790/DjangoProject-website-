@@ -27,12 +27,14 @@ class BookingForm(forms.ModelForm):
         check_out = cleaned_data.get('check_out')
 
         if check_in >= check_out:
-            raise forms.ValidationError("Check-out date must be after check-in date.")
+            raise forms.ValidationError("Дата выезда должна быть позже даты заезда.")
 
         if room:
+            # Получаем пользователя, если он есть
+            user = getattr(self.instance, 'user', None)
             # Проверим, доступен ли номер
-            booking = Booking(user=self.instance.user, room=room, check_in=check_in, check_out=check_out)
+            booking = Booking(user=user, room=room, check_in=check_in, check_out=check_out)
             if not booking.is_available():
-                raise forms.ValidationError("This room is already booked for the selected dates.")
+                raise forms.ValidationError("Этот номер уже забронирован на выбранные даты.")
 
         return cleaned_data

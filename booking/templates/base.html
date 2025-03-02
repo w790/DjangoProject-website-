@@ -19,7 +19,10 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                            <a class="nav-link" href="{% url 'dashboard' %}">Мои бронирования</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="{% url 'logout' %}">Выйти</a>
                         </li>
                     {% else %}
                         <li class="nav-item">

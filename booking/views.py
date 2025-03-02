@@ -15,29 +15,37 @@ def register_view(request):#Регистрация нового пользова
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('booking/home')
+            return redirect('home')
     else:
         form = RegisterForm()
     return render(request,"booking/register.html",{'form':form})
 
-def login_view(request):#Авторизация (вход) существующего пользователя
+from django.contrib.auth.forms import AuthenticationForm
+
+def login_view(request):  # Авторизация (вход) существующего пользователя
+    form = AuthenticationForm()  #  Форма всегда создаётся
+
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            return redirect('booking/home')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'booking/login.html', {'form': form})
+        form = AuthenticationForm(request, data=request.POST)  # Передаём данные в форму
+        if form.is_valid():  #  Проверяем валидацию формы
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)  #  Авторизуем пользователя
+                return redirect('home')
+
+    return render(request, 'booking/login.html', {'form': form})  #  Теперь `form` всегда определён
+
 
 def logout_view(request):#Выхода пользователя из системы
     logout(request)
-    return redirect('booking/home')
+    return redirect('login')
 
 # Представление для главной страницы
 def home_view(request):
-    return render(request, 'booking/home.html')
+    rooms = Room.objects.all()  # Загружаем все номера из базы
+    return render(request, 'booking/home.html',{'rooms': rooms})
 
 # Проверка: доступ только для администраторов
 def admin_required(user):
@@ -88,13 +96,15 @@ def room_delete(request, pk):
 
 @login_required
 def create_booking(request):
+    print("Текущий пользователь:", request.user)
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.user = request.user  # Устанавливаем текущего пользователя
+            print("Перед сохранением: ", booking.user, booking.room, booking.check_in, booking.check_out)
             booking.save()
-            return redirect('booking/booking_success')  # Переход к успешному бронированию
+            return redirect('booking_success')  # Переход к успешному бронированию
     else:
         form = BookingForm()
 
@@ -134,3 +144,11 @@ def cancel_booking(request, pk):
     booking.status = "Отменено"  # Меняем статус
     booking.save()
     return redirect("booking/booking_list")
+
+@login_required
+def user_cancel_booking(request, pk):
+    booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    if booking.status == "Ожидание":  # Пользователь может отменить только неподтвержденные бронирования
+        booking.status = "Отменено"
+        booking.save()
+    return redirect("user_dashboard")
