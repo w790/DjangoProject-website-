@@ -14,7 +14,7 @@ def register_view(request):#Регистрация нового пользова
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')
+            return redirect('booking/home')
     else:
         form = RegisterForm()
     return render(request,"booking/register.html",{'form':form})
@@ -25,14 +25,14 @@ def login_view(request):#Авторизация (вход) существующ�
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            return redirect('home')
+            return redirect('booking/home')
     else:
         form = AuthenticationForm()
     return render(request, 'booking/login.html', {'form': form})
 
 def logout_view(request):#Выхода пользователя из системы
     logout(request)
-    return redirect('home')
+    return redirect('booking/home')
 
 # Представление для главной страницы
 def home_view(request):
@@ -57,7 +57,7 @@ def room_add(request):
         form = RoomForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('room_list')
+            return redirect('booking/room_list')
     else:
         form = RoomForm()
     return render(request, 'booking/room_form.html', {'form': form})
@@ -71,7 +71,7 @@ def room_edit(request, pk):
         form = RoomForm(request.POST, request.FILES, instance=room)
         if form.is_valid():
             form.save()
-            return redirect('room_list')
+            return redirect('booking/room_list')
     else:
         form = RoomForm(instance=room)
     return render(request, 'booking/room_form.html', {'form': form})
@@ -82,7 +82,7 @@ def room_edit(request, pk):
 def room_delete(request, pk):
     room = get_object_or_404(Room, pk=pk)
     room.delete()
-    return redirect('room_list')
+    return redirect('booking/room_list')
 
 
 @login_required
@@ -93,11 +93,12 @@ def create_booking(request):
             booking = form.save(commit=False)
             booking.user = request.user  # Устанавливаем текущего пользователя
             booking.save()
-            return redirect('booking_success')  # Переход к успешному бронированию
+            return redirect('booking/booking_success')  # Переход к успешному бронированию
     else:
         form = BookingForm()
 
-    return render(request, 'create_booking.html', {'form': form})
+    return render(request, 'booking/create_booking.html', {'form': form})
 
+@login_required
 def booking_success(request):
-    return render(request, 'booking_success.html')
+    return render(request, 'booking/booking_success.html')
