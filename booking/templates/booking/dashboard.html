@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Личный кабинет</h2>
+<p>Добро пожаловать, {{ user.username }}!</p>
+
+<h3>Ваши бронирования:</h3>
+{% if bookings %}
+    <ul>
+        {% for booking in bookings %}
+            <li>Номер: {{ booking.room.name }}, Даты: {{ booking.check_in }} - {{ booking.check_out }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>У вас пока нет бронирований.</p>
+{% endif %}
+{% endblock %}

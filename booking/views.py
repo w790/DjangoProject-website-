@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import RegisterForm,BookingForm,RoomForm
 from .models import Room
+from .models import Booking
 
 # Форма — это основа ввода данных.
 # Форма регистрации — это интерфейс, с помощью которого пользователи будут вводить свои данные
@@ -102,3 +103,8 @@ def create_booking(request):
 @login_required
 def booking_success(request):
     return render(request, 'booking/booking_success.html')
+
+@login_required
+def user_dashboard(request):
+    bookings = Booking.objects.filter(user=request.user)  # Получаем бронирования текущего пользователя
+    return render(request, "booking/dashboard.html", {"bookings": bookings})
